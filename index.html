@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Лабораторная работа №3: интерактивная визуализация успеваемости школьников на основе набора Student Performance (UCI).">
+  <meta name="theme-color" content="#101d36">
+  <title>Лабораторная №3 — Визуализация успеваемости школьников</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script defer src="./assets/plotly.min.js"></script>
+  <script defer src="./app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#research">Перейти к графикам</a>
+  <header class="hero">
+    <div class="shell">
+      <div class="topline">
+        <a class="brand" href="#top" aria-label="В начало страницы"><span class="brand-icon">d<span>.</span></span><span>DATA / LAB <strong>03</strong></span></a>
+        <span class="topnote"><span class="status-ping"></span> МАГИСТРАТУРА · ИНФОГРАФИКА · 2026</span>
+      </div>
+      <div class="hero-grid" id="top">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="tiny-rule"></span> ИНТЕРАКТИВНОЕ ИССЛЕДОВАНИЕ ДАННЫХ</p>
+          <h1>Как меняется <em>картина</em><br>успеваемости?</h1>
+          <p class="hero-subtitle">Как меняются оценки от первого периода до итогового, как распределены результаты по школам и сколько баллов получают ученики с разным временем подготовки.</p>
+          <div class="hero-anchors"><a href="#research" class="primary-link">Исследовать графики <span aria-hidden="true">↗</span></a><a href="#method" class="secondary-link">О данных и методике <span aria-hidden="true">↓</span></a></div>
+        </div>
+        <div class="hero-aside" aria-hidden="true">
+          <div class="orbit orbit-large"></div><div class="orbit orbit-small"></div>
+          <div class="orbital-label orbital-one">G1 <span>01</span></div><div class="orbital-label orbital-two">G2 <span>02</span></div><div class="orbital-label orbital-three">G3 <span>03</span></div>
+          <div class="hero-center"><span>01—03</span><strong>G</strong><small>20 БАЛЛОВ</small></div>
+        </div>
+      </div>
+      <div class="hero-footer"><span>НАБОР ДАННЫХ <strong>UCI · STUDENT PERFORMANCE</strong></span><span>ПРЕДМЕТ <strong>МАТЕМАТИКА</strong></span><span>ОЦЕНКИ <strong>0—20 БАЛЛОВ</strong></span></div>
+    </div>
+  </header>
+
+  <main class="shell main-content" id="research">
+    <div class="section-intro"><div><span class="section-kicker">01 / ПАНЕЛЬ АНАЛИЗА</span><h2>Исследуйте выборку</h2><p>Настройте условия — все три графика, показатели и выводы обновятся одновременно.</p></div><div class="data-state" id="data-status" role="status" aria-live="polite"><span class="state-dot"></span><span id="data-status-text">Загружаем данные…</span></div></div>
+
+    <section class="filters" aria-labelledby="filter-heading">
+      <div class="filters-heading"><div><span class="overline">ФИЛЬТРЫ</span><h3 id="filter-heading">Срез данных</h3></div><button class="reset-button" id="reset-filters" type="button"><span aria-hidden="true">↺</span> Сбросить</button></div>
+      <div class="filter-grid">
+        <label class="field"><span>Школа</span><select id="school-filter"><option value="all">Обе школы</option><option value="GP">Gabriel Pereira (GP)</option><option value="MS">Mousinho da Silveira (MS)</option></select></label>
+        <label class="field"><span>Пол</span><select id="sex-filter"><option value="all">Все ученики</option><option value="F">Девушки</option><option value="M">Юноши</option></select></label>
+        <label class="field"><span>Учёба в неделю</span><select id="study-filter"><option value="all">Любое время</option><option value="1">Меньше 2 часов</option><option value="2">2–5 часов</option><option value="3">5–10 часов</option><option value="4">Больше 10 часов</option></select></label>
+        <label class="field"><span>Итоговая группа</span><select id="band-filter"><option value="all">Все оценки</option><option value="0">Ниже 10</option><option value="1">10–13</option><option value="2">14–20</option></select></label>
+        <label class="field range-field"><span>Не более пропусков <strong id="absences-value">—</strong></span><input id="absences-filter" type="range" min="0" max="93" value="93" step="1" aria-label="Максимальное число пропусков"><span class="range-scale"><span>0</span><span id="absences-max">93</span></span></label>
+      </div>
+      <div class="filter-footer"><span class="active-count" id="subset-count">Подготовка графиков…</span><span>Единица наблюдения — один ученик · Все расчёты по выбранному срезу</span></div>
+    </section>
+
+    <section class="kpi-grid" aria-label="Основные показатели">
+      <article class="metric"><div class="metric-header"><span>УЧЕНИКОВ В СРЕЗЕ</span><span class="metric-symbol">01</span></div><strong id="kpi-count">—</strong><p>записей из текущего набора</p></article>
+      <article class="metric"><div class="metric-header"><span>СРЕДНЯЯ ОЦЕНКА G3</span><span class="metric-symbol">02</span></div><strong id="kpi-average">—</strong><p>из 20 возможных баллов</p></article>
+      <article class="metric"><div class="metric-header"><span>РЕЗУЛЬТАТ G3 ≥ 10</span><span class="metric-symbol">03</span></div><strong id="kpi-passed">—</strong><p>доля выбранных учеников</p></article>
+      <article class="metric"><div class="metric-header"><span>СРЕДНЕЕ ИЗМЕНЕНИЕ</span><span class="metric-symbol">04</span></div><strong id="kpi-delta">—</strong><p>G3 − G1, в баллах</p></article>
+    </section>
+
+    <div class="charts-heading"><div><span class="section-kicker">02 / ТРИ ТИПА ДИАГРАММ</span><h2>Данные с разных сторон</h2></div><div class="chart-legend" aria-label="Группы оценок"><span><i class="legend-dot low"></i> Ниже 10</span><span><i class="legend-dot middle"></i> 10–13</span><span><i class="legend-dot high"></i> 14–20</span></div></div>
+
+    <section class="chart-card chart-wide" aria-labelledby="sankey-heading">
+      <div class="chart-top"><div><span class="chart-index">ГРАФИК 01 <span>/</span> SANKEY</span><h3 id="sankey-heading">Траектория оценок</h3><p class="chart-question">Как ученики переходят между группами оценок от G1 к G2 и G3?</p></div><span class="type-pill">ПОТОКИ</span></div>
+      <div class="chart-frame chart-frame-sankey" id="chart-sankey" role="img" aria-label="Диаграмма Санкей с переходами групп оценок за три периода"></div>
+      <div class="chart-bottom"><div class="insight"><span class="insight-label">ВЫВОД ПО ГРАФИКУ</span><p id="insight-sankey">Рассчитываем изменение групп оценок…</p></div><div class="chart-method">Три этапа: G1 → G2 → G3. Толщина ленты — число учеников. Каждый ученик учтён один раз в каждой паре соседних периодов.</div></div>
+    </section>
+
+    <div class="chart-grid">
+      <section class="chart-card" aria-labelledby="sunburst-heading">
+        <div class="chart-top"><div><span class="chart-index">ГРАФИК 02 <span>/</span> SUNBURST</span><h3 id="sunburst-heading">Структура результатов</h3><p class="chart-question">Как сочетаются школа, время учёбы и итоговая группа?</p></div><span class="type-pill">ИЕРАРХИЯ</span></div>
+        <div class="chart-frame" id="chart-sunburst" role="img" aria-label="Круговая иерархическая диаграмма: школа, время учёбы, итоговая группа"></div>
+        <div class="chart-bottom"><div class="insight"><span class="insight-label">ВЫВОД ПО ГРАФИКУ</span><p id="insight-sunburst">Рассчитываем состав групп…</p></div><div class="chart-method">Вложенность: школа → время учёбы → итоговая группа. Нажмите на сектор, чтобы увеличить ветвь.</div></div>
+      </section>
+      <section class="chart-card" aria-labelledby="swarm-heading">
+        <div class="chart-top"><div><span class="chart-index">ГРАФИК 03 <span>/</span> BEESWARM</span><h3 id="swarm-heading">Каждая оценка — точка</h3><p class="chart-question">Как распределяется итоговый балл G3 при разном времени учёбы?</p></div><span class="type-pill">РАСПРЕДЕЛЕНИЕ</span></div>
+        <div class="chart-frame" id="chart-beeswarm" role="img" aria-label="Диаграмма Beeswarm: оценки отдельных учеников по времени учёбы"></div>
+        <div class="chart-bottom"><div class="insight"><span class="insight-label">ВЫВОД ПО ГРАФИКУ</span><p id="insight-beeswarm">Рассчитываем медианы оценок…</p></div><div class="chart-method">Одна точка — один ученик. Горизонтальное раздвижение внутри группы служит только для устранения перекрытий; значение показано по оси Y.</div></div>
+      </section>
+    </div>
+
+    <section class="method" id="method" aria-labelledby="method-heading"><div class="method-lead"><span class="section-kicker">03 / ИСТОЧНИК И ПОДХОД</span><h2 id="method-heading">Как устроена работа</h2><p>Все три визуализации построены на одном открытом наборе данных. Мы не подменяем наблюдения оценками или прогнозами: все показатели — описательная статистика.</p><a href="https://archive.ics.uci.edu/dataset/320/student+performance" target="_blank" rel="noopener noreferrer" class="source-link">Открыть первоисточник UCI <span aria-hidden="true">↗</span></a></div><div class="method-details"><div class="method-item"><span class="method-number">01</span><div><h3>Набор данных</h3><p><strong>Student Performance</strong>, курс математики (<code>student-mat.csv</code>): 395 записей, 33 поля в исходном CSV. Данные двух португальских школ; автор — Paulo Cortez, UCI Machine Learning Repository. Лицензия CC BY 4.0.</p></div></div><div class="method-item"><span class="method-number">02</span><div><h3>Как считаем</h3><p>G1, G2, G3 — оценки 1-го, 2-го периода и итоговая (0–20). Для визуализации введены группы: <strong>0–9</strong>, <strong>10–13</strong>, <strong>14–20</strong>. <code>studytime</code>: &lt;2, 2–5, 5–10, &gt;10 часов в неделю. Среднее и доли рассчитываются по отфильтрованным строкам.</p></div></div><div class="method-item"><span class="method-number">03</span><div><h3>Ограничения интерпретации</h3><p>Время на учёбу указано как категория, не точное число часов. Разделение на группы оценок выбрано для анализа. Корреляции не доказывают причинно-следственную связь. Две школы и один предмет не представляют всю совокупность школьников.</p></div></div><div class="method-item"><span class="method-number">04</span><div><h3>Доступность данных</h3><p id="source-technical">Сайт пытается загрузить полный оригинал CSV. При недоступности источника доступен локальный проверенный фрагмент; режим работы явно обозначен выше.</p><button type="button" class="download-button" id="download-csv">Скачать текущий срез CSV <span aria-hidden="true">↓</span></button></div></div></div></section>
+  </main>
+
+  <footer class="footer"><div class="shell footer-inner"><span><strong>DATA / LAB 03</strong> · Инфографика и визуализация данных</span><span>Лабораторная работа №3 · 2026 · <a href="https://doi.org/10.24432/C5TG7T" target="_blank" rel="noopener noreferrer">UCI / DOI: 10.24432/C5TG7T</a></span></div></footer>
+</body>
+</html>

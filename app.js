@@ -5,12 +5,12 @@
 const SOURCE = Object.freeze({
   uci: 'https://archive.ics.uci.edu/dataset/320/student+performance',
   mirror: 'https://raw.githubusercontent.com/MakroMB/student-performance-analysis/main/data/student-mat.csv',
-  localFull: './data/student-mat.csv',
-  localFallback: './data/sample_students.csv',
+  localFull: './student-mat.csv',
+  localFallback: './sample_students.csv',
   expectedCount: 395,
 });
-const COLORS = ['#f08379', '#f5bd64', '#44b995'];
-const FILLS = ['rgba(240,131,121,0.31)', 'rgba(245,189,100,0.33)', 'rgba(68,185,149,0.33)'];
+const COLORS = ['#ff8b88', '#f6c56d', '#57d3a8'];
+const FILLS = ['rgba(255,139,136,0.34)', 'rgba(246,197,109,0.34)', 'rgba(87,211,168,0.32)'];
 const BANDS = ['0–9', '10–13', '14–20'];
 const STUDY = ['', 'меньше 2 часов', '2–5 часов', '5–10 часов', 'больше 10 часов'];
 const STUDY_SHORT = ['', '<2 ч', '2–5 ч', '5–10 ч', '>10 ч'];
@@ -75,11 +75,11 @@ function setStatus(mode, n) {
   const widget = $('data-status');
   widget.className = 'data-state '+(mode==='full'?'complete':'demo');
   if (mode==='full') {
-    $('data-status-text').textContent = 'Полный оригинал · '+formatNumber(n)+' записей';
-    $('source-technical').textContent = 'Загружены все '+formatNumber(n)+' наблюдений по математике из файла student-mat.csv. Данные обработаны в браузере; графики и расчёты не используют искусственные значения.';
+    $('data-status-text').textContent = '';
+    $('source-technical').textContent = 'Загружен полный файл student-mat.csv ('+formatNumber(n)+' записей). Все расчёты выполнены в браузере без искусственно созданных значений.';
   } else {
-    $('data-status-text').textContent = 'Резервный фрагмент · '+formatNumber(n)+' из 395 записей';
-    $('source-technical').textContent = 'Источник полного CSV временно недоступен: показан встроенный проверенный фрагмент из первых 45 и последних 46 записей исходного файла (не случайная выборка). Для полной независимости от внешнего источника можно добавить исходный student-mat.csv в папку data/ репозитория.';
+    $('data-status-text').textContent = '';
+    $('source-technical').textContent = 'Полный исходный CSV временно недоступен, поэтому используется встроенный проверенный фрагмент. Для автономной публикации можно положить student-mat.csv рядом с сайтом в репозиторий.';
   }
 }
 function useData(rows, mode, csvString) {
@@ -115,7 +115,7 @@ function renderMetrics(rows) {
   else $('kpi-delta').textContent = '—';
   $('subset-count').textContent = 'Выбрано '+formatNumber(rows.length)+' из '+formatNumber(students.length);
 }
-const layoutBase = () => ({paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',font:{family:FONT,color:'#65738a',size:11},hoverlabel:{bgcolor:'#fff',bordercolor:'#dce4ef',font:{color:'#20334f',family:FONT,size:12}}});
+const layoutBase = () => ({paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',font:{family:FONT,color:'#b7c9df',size:11},hoverlabel:{bgcolor:'#102038',bordercolor:'#243855',font:{color:'#eff6ff',family:FONT,size:12}}});
 function emptyGraphs() {
   for (const name of ['sankey','sunburst','beeswarm']) {
     const root = $('chart-'+name);
@@ -133,12 +133,12 @@ async function plotSankey(rows) {
   const labels=[...Array(9)].map((_,i)=>'G'+(Math.floor(i/3)+1)+' · '+BANDS[i%3]);
   const trace={type:'sankey',orientation:'h',arrangement:'snap',valueformat:'d',
     node:{label:labels,pad:21,thickness:20,x:[.015,.015,.015,.5,.5,.5,.985,.985,.985],color:[...COLORS,...COLORS,...COLORS],
-      line:{color:'#fff',width:1},hovertemplate:'%{label}<br>%{value} учеников<extra></extra>'},
+      line:{color:'rgba(255,255,255,0.08)',width:1},hovertemplate:'%{label}<br>%{value} учеников<extra></extra>'},
     link:{source:entries.map(e=>e.source),target:entries.map(e=>e.target),value:entries.map(e=>e.count),
       color:entries.map(e=>FILLS[e.source%3]),hovertemplate:'%{source.label} → %{target.label}<br><b>%{value} учеников</b><extra></extra>'}
   };
   const layout={...layoutBase(),margin:{l:16,r:16,t:47,b:10},
-    annotations:[{x:.02,text:'I ПЕРИОД · G1'},{x:.50,text:'II ПЕРИОД · G2'},{x:.98,text:'ИТОГ · G3'}].map(a=>({x:a.x,y:1.11,text:a.text,xref:'paper',yref:'paper',xanchor:'center',showarrow:false,font:{size:10,color:'#7889a2',family:FONT}}))};
+    annotations:[{x:.02,text:'I ПЕРИОД · G1'},{x:.50,text:'II ПЕРИОД · G2'},{x:.98,text:'ИТОГ · G3'}].map(a=>({x:a.x,y:1.11,text:a.text,xref:'paper',yref:'paper',xanchor:'center',showarrow:false,font:{size:10,color:'#8da5c5',family:FONT}}))};
   await Plotly.react('chart-sankey',[trace],layout,plotConfig);
   const up = rows.filter(r=>band(r.G3)>band(r.G1)).length;
   const down = rows.filter(r=>band(r.G3)<band(r.G1)).length;
@@ -163,7 +163,7 @@ async function plotSunburst(rows) {
     }
   }
   const trace={type:'sunburst',ids:nodes.map(n=>n.id),labels:nodes.map(n=>n.label),parents:nodes.map(n=>n.parent),values:nodes.map(n=>n.value),branchvalues:'total',
-    marker:{colors:nodes.map(n=>n.color),line:{color:'#fff',width:2}},maxdepth:4,
+    marker:{colors:nodes.map(n=>n.color),line:{color:'rgba(255,255,255,0.08)',width:2}},maxdepth:4,
     insidetextorientation:'radial',textinfo:'label',hovertemplate:'%{label}<br><b>%{value} учеников</b><br>%{percentParent:.1%} от родительской группы<extra></extra>',
     sort:false};
   await Plotly.react('chart-sunburst',[trace],{...layoutBase(),margin:{l:10,r:10,t:5,b:5},uniformtext:{minsize:10,mode:'hide'}},plotConfig);
@@ -176,7 +176,7 @@ async function plotBeeswarm(rows) {
   // Раздвижение строго по X при одинаковом целом G3; координата Y всегда равна фактическому баллу.
   // При большом числе совпадений шаг уменьшается, чтобы точки не заходили на соседние категории.
   const traces=[0,1,2].map((b)=>({type:'scatter',mode:'markers',name:BANDS[b],x:[],y:[],customdata:[],showlegend:false,
-    marker:{color:COLORS[b],size:7.5,opacity:.78,line:{color:'#fff',width:.6}},
+    marker:{color:COLORS[b],size:7.5,opacity:.82,line:{color:'rgba(255,255,255,0.18)',width:.6}},
     hovertemplate:'Итог G3: <b>%{y} / 20</b><br>Занятия: %{customdata[0]}<br>Школа: %{customdata[1]}<br>G1 → G2: %{customdata[2]} → %{customdata[3]}<br>Пропуски: %{customdata[4]}<extra></extra>'}));
   for (let st=1;st<=4;st++) {
     for (let score=0;score<=20;score++) {
@@ -197,12 +197,12 @@ async function plotBeeswarm(rows) {
     const values=rows.filter(r=>r.studytime===st).map(r=>r.G3), med=median(values);
     if (med===null) continue;
     stats.push({st,med,n:values.length});
-    shapes.push({type:'line',x0:st-.27,x1:st+.27,y0:med,y1:med,xref:'x',yref:'y',line:{color:'#1c3150',width:2.4}});
-    annotations.push({x:st,y:21.3,text:'Медиана '+formatDecimal(med),xref:'x',yref:'y',showarrow:false,font:{size:10,color:'#637890',family:FONT}});
+    shapes.push({type:'line',x0:st-.27,x1:st+.27,y0:med,y1:med,xref:'x',yref:'y',line:{color:'#9dc2ff',width:2.4}});
+    annotations.push({x:st,y:21.3,text:'Медиана '+formatDecimal(med),xref:'x',yref:'y',showarrow:false,font:{size:10,color:'#9cb2cc',family:FONT}});
   }
   const layout={...layoutBase(),margin:{l:48,r:13,t:27,b:43},
-    xaxis:{range:[.48,4.52],tickvals:[1,2,3,4],ticktext:STUDY_SHORT.slice(1),tickfont:{size:11,color:'#425671'},zeroline:false,showline:true,linecolor:'#c9d6e3',showgrid:false,fixedrange:true},
-    yaxis:{range:[-.6,22],tickvals:[0,5,10,15,20],title:{text:'Итоговая оценка G3 · баллы',font:{size:10,color:'#8593a4'},standoff:6},gridcolor:'#eaf0f5',zeroline:false,fixedrange:true},
+    xaxis:{range:[.48,4.52],tickvals:[1,2,3,4],ticktext:STUDY_SHORT.slice(1),tickfont:{size:11,color:'#dbe7f6'},zeroline:false,showline:true,linecolor:'rgba(171,197,230,0.22)',showgrid:false,fixedrange:true},
+    yaxis:{range:[-.6,22],tickvals:[0,5,10,15,20],title:{text:'Итоговая оценка G3 · баллы',font:{size:10,color:'#a9bdd6'},standoff:6},gridcolor:'rgba(171,197,230,0.12)',zeroline:false,fixedrange:true},
     shapes,annotations,showlegend:false,hovermode:'closest',dragmode:false};
   await Plotly.react('chart-beeswarm',traces,layout,plotConfig);
   stats.sort((a,b)=>b.med-a.med || b.n-a.n);

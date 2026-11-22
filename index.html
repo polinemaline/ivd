@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Лабораторная работа №3: интерактивная визуализация успеваемости школьников на основе набора Student Performance (UCI).">
-  <meta name="theme-color" content="#101d36">
+  <meta name="theme-color" content="#07111f">
   <title>Лабораторная №3 — Визуализация успеваемости школьников</title>
   <link rel="stylesheet" href="./styles.css">
   <script defer src="./plotly.min.js"></script>
@@ -14,7 +14,7 @@
   <!-- Служебные элементы нужны для обработки CSV и фильтров; они не изменяют видимый текст страницы. -->
   <button type="button" id="reset-filters" style="display:none" aria-hidden="true" tabindex="-1"></button>
 <main class="shell main-content" id="research">
-    <div id="data-status" class="data-state" role="status" aria-live="polite" style="margin-bottom:20px"><span id="data-status-text"></span></div>
+    <div id="data-status" class="data-state" role="status" aria-live="polite" aria-hidden="true"><span id="data-status-text"></span></div>
     <section class="filters" aria-labelledby="filter-heading">
        <div class="filter-grid">
         <label class="field"><span>Школа</span><select id="school-filter"><option value="all">Обе школы</option><option value="GP">Gabriel Pereira (GP)</option><option value="MS">Mousinho da Silveira (MS)</option></select></label>
@@ -52,8 +52,7 @@
     <section class="method" id="method" aria-labelledby="method-heading"><div class="method-lead"><p>Все три визуализации построены на одном открытом наборе данных.</p><a href="https://archive.ics.uci.edu/dataset/320/student+performance" target="_blank" rel="noopener noreferrer" class="source-link">Открыть первоисточник UCI <span aria-hidden="true">↗</span></a></div><div class="method-details"><div class="method-item"><span class="method-number">01</span><div><h3>Набор данных</h3><p><strong>Student Performance</strong>, курс математики (<code>student-mat.csv</code>): 395 записей, 33 поля в исходном CSV.
 Данные двух португальских школ; автор — Paulo Cortez, UCI Machine Learning Repository. Лицензия CC BY 4.0.</p></div></div><div class="method-item"><span class="method-number">02</span><div><h3>Как считаем</h3><p>G1, G2, G3 — оценки 1-го, 2-го периода и итоговая (0–20). Для визуализации введены группы: <strong>0–9</strong>, <strong>10–13</strong>, <strong>14–20</strong>. <code>studytime</code>: &lt;2, 2–5, 5–10, &gt;10 часов в неделю.
 Среднее и доли рассчитываются по отфильтрованным строкам.</p></div></div><div class="method-item"><span class="method-number">03</span><div><h3>Ограничения интерпретации</h3><p>Время на учёбу указано как категория, не точное число часов. Разделение на группы оценок выбрано для анализа. Корреляции не доказывают причинно-следственную связь.
-Две школы и один предмет не представляют всю совокупность школьников.</p></div></div><div class="method-item"><span class="method-number">04</span><div><h3>Доступность данных</h3><p id="source-technical">Сайт пытается загрузить полный оригинал CSV.
-При недоступности источника доступен локальный проверенный фрагмент; режим работы явно обозначен выше.</p><button type="button" class="download-button" id="download-csv">Скачать текущий срез CSV <span aria-hidden="true">↓</span></button></div></div></div></section>
+Две школы и один предмет не представляют всю совокупность школьников.</p></div></div><div class="method-item"><span class="method-number">04</span><div><h3>Доступность данных</h3><p id="source-technical">Для построения графиков используется локальный CSV в репозитории или полный исходный файл, если он доступен. Все расчёты выполняются прямо в браузере.</p><button type="button" class="download-button" id="download-csv">Скачать текущий срез CSV <span aria-hidden="true">↓</span></button></div></div></div></section>
   </main>
 </body>
 </html>
